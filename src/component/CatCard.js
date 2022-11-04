@@ -1,10 +1,10 @@
-import React from "react";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
   width: 300px;
   height: 300px;
   margin-right: 28px;
+  background-color: rgba(0, 0, 0, 0.3);
 
   cursor: pointer;
   position: relative;

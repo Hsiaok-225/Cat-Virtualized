@@ -93,7 +93,7 @@ const PrevImgBtn = styled.div`
 `;
 
 export default function SingleCat({
-  breeds,
+  breedInfo,
   singleCat,
   handleClose,
   handleNextimg,
@@ -109,11 +109,11 @@ export default function SingleCat({
         </ImageBox>
         <CardInfo>
           <InfoTitle>
-            <a href={breeds.wikipedia_url} target="blank" alt="#">
-              {breeds.name}_WIKI
+            <a href={breedInfo.wikipedia_url} target="blank" alt="#">
+              {breedInfo.name}_WIKI
             </a>
           </InfoTitle>
-          <InfoDesc>{breeds.description}</InfoDesc>
+          <InfoDesc>{breedInfo.description}</InfoDesc>
         </CardInfo>
       </CardWrapper>
       <CloseButton onClick={handleClose}>x</CloseButton>

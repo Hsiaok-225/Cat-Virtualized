@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useCallback, useEffect, useState, useRef } from "react";
-import useFetchCats from "./useFetchCats";
+import axios from "axios";
+import { PORT, BASE_URL, divideCats } from "./constant/WEB_API";
 import styled from "styled-components";
 import SingleCat from "./component/SingleCat";
 import CatCard from "./component/CatCard";
@@ -11,6 +12,7 @@ import {
   CellMeasurerCache,
   WindowScroller,
 } from "react-virtualized";
+import { CatContext } from "./context";
 
 // *Pointer update
 // *useCallback update when dependency change?
@@ -18,14 +20,11 @@ import {
 
 // placeholder & favorite
 
-// favorite function
-
+// Login & favorite
 // {
 //   "image_id":"id of the image",
 //   "sub_id":"optional unique id of your user"
 // }
-
-// search function
 
 const Wrapper = styled.div`
   display: flex;
@@ -65,15 +64,15 @@ const Error = styled.div`
 `;
 
 export default function Cat() {
-  const [pageNumber, setPageNumber] = useState(0);
+  const { cats, setCats } = useContext(CatContext);
+
   const [singleCat, setSingleCat] = useState(null);
-  const [breeds, setBreeds] = useState(null);
-  const [catIndex, setCatIndex] = useState(0);
-  const [rowIndex, setRowIndex] = useState(0);
+  const [breedInfo, setBreedInfo] = useState([]);
+  const [catIndex, setCatIndex] = useState(null);
+  const [rowIndex, setRowIndex] = useState(null);
   const [closeNextImg, setCloseNextImg] = useState(false);
   const [closePrevImg, setClosePrevImg] = useState(false);
   const [isScrollbar, setIsScrollbar] = useState(true);
-  const { cats, hasMore, loading, error } = useFetchCats(pageNumber);
 
   const cache = useRef(
     new CellMeasurerCache({
@@ -81,8 +80,79 @@ export default function Cat() {
     })
   );
 
+  // useEffect(() => {
+  //   console.log(cats.cats);
+  // }, [cats.cats]);
+  // useEffect(() => {
+  //   console.log("isbreed", cats.isbreed);
+  // }, [cats.isbreed]);
+  // useEffect(() => {
+  //   console.log("row", rowIndex, "cat", catIndex);
+  // }, [rowIndex, catIndex]);
+
+  //get more random cats
   useEffect(() => {
-    if (rowIndex === cats.length - 1 && catIndex === 2) {
+    if (cats.pageNumber > 0 && !cats.isbreed) {
+      console.log("get more");
+      setCats({ ...cats, loading: true });
+      const loadMoreCats = () => {
+        axios(`${BASE_URL}/api/moreCats?pageNumber=${cats.pageNumber}`)
+          .then((res) => {
+            const divide = divideCats([...res.data], 3);
+            console.log(divide);
+            setCats({
+              ...cats,
+              cats: [...cats.cats, ...divide],
+              hasMore: res.data.length > 0,
+              loading: false,
+            });
+          })
+          .catch(() => {
+            setCats({
+              ...cats,
+              error: true,
+              loading: false,
+            });
+          });
+      };
+      loadMoreCats();
+    }
+  }, [cats.pageNumber]);
+
+  // *why setLoading here wrong ?
+  // get random cats
+  useEffect(() => {
+    if (!cats.isbreed) {
+      console.log("get init");
+      setCats({ ...cats, loading: true });
+      const getCats = () => {
+        axios(`${BASE_URL}/api/cats?`)
+          .then((res) => {
+            const divide = divideCats(res.data, 3);
+            setCats({
+              ...cats,
+              cats: divide,
+              hasMore: res.data.length > 0,
+              loading: false,
+            });
+          })
+          .catch(() => {
+            setCats({
+              ...cats,
+              error: true,
+              loading: false,
+            });
+          });
+      };
+      getCats();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (
+      rowIndex === cats.cats.length - 1 &&
+      catIndex === cats.cats[rowIndex].length - 1
+    ) {
       setCloseNextImg(true);
     } else {
       setCloseNextImg(false);
@@ -92,10 +162,10 @@ export default function Cat() {
     } else {
       setClosePrevImg(false);
     }
-    if (cats.length > 0) {
-      setBreeds(cats[rowIndex][catIndex].breeds[0]);
+    if (rowIndex !== null && catIndex !== null) {
+      setBreedInfo(cats.cats[rowIndex][catIndex].breeds[0]);
     }
-  }, [catIndex, rowIndex, cats]);
+  }, [rowIndex, catIndex, cats.cats]);
 
   // open & close scroll bar
   useEffect(() => {
@@ -106,18 +176,18 @@ export default function Cat() {
   const observer = useRef();
   const lastCatElementRef = useCallback(
     (node) => {
-      if (loading) return;
+      if (cats.isbreed) return;
+      if (cats.loading) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
         // check loading state
-        if (entries[0].isIntersecting && hasMore) {
-          console.log("setpage number", pageNumber);
-          setPageNumber(pageNumber + 1);
+        if (entries[0].isIntersecting && cats.hasMore) {
+          setCats({ ...cats, pageNumber: (cats.pageNumber += 1) });
         }
       });
       if (node) observer.current.observe(node);
     },
-    [loading, hasMore]
+    [cats.loading, cats.hasMore, cats.isbreed]
   );
 
   // rowPointer, catPointer
@@ -126,13 +196,17 @@ export default function Cat() {
 
     setSingleCat(cat.url);
     setCatIndex(index);
-    const findRowIndex = cats.findIndex((row) => row[index].url === cat.url);
+    const findRowIndex = cats.cats.findIndex(
+      (row) => row[index].url === cat.url
+    );
     setRowIndex(findRowIndex);
   };
 
   const handleClose = () => {
     setSingleCat(null);
     setIsScrollbar(true);
+    setCatIndex(null);
+    setRowIndex(null);
   };
 
   // [0-n][0-2] first & last Image
@@ -140,8 +214,10 @@ export default function Cat() {
     setClosePrevImg(false);
     const nextCatIndex = catIndex < 2 ? catIndex + 1 : 0;
     const nextRowIndex =
-      catIndex === 2 && rowIndex < cats.length - 1 ? rowIndex + 1 : rowIndex;
-    const newSingleCat = cats[nextRowIndex][nextCatIndex].url;
+      catIndex === 2 && rowIndex < cats.cats.length - 1
+        ? rowIndex + 1
+        : rowIndex;
+    const newSingleCat = cats.cats[nextRowIndex][nextCatIndex].url;
 
     setCatIndex(nextCatIndex);
     setRowIndex(nextRowIndex);
@@ -152,8 +228,7 @@ export default function Cat() {
     const prevCatIndex = catIndex > 0 ? catIndex - 1 : 2;
     const prevRowIndex =
       catIndex === 0 && rowIndex > 0 ? rowIndex - 1 : rowIndex;
-    console.log(prevRowIndex, prevCatIndex);
-    const newSingleCat = cats[prevRowIndex][prevCatIndex].url;
+    const newSingleCat = cats.cats[prevRowIndex][prevCatIndex].url;
 
     setCatIndex(prevCatIndex);
     setRowIndex(prevRowIndex);
@@ -173,13 +248,13 @@ export default function Cat() {
                     scrollTop={scrollTop}
                     width={width}
                     height={height}
-                    rowCount={cats.length}
+                    rowCount={cats.cats.length}
                     rowHeight={cache.current.rowHeight}
                     deferredMeasurementCache={cache.current}
                     rowRenderer={({ key, index, style, parent }) => {
-                      const row = cats[index];
+                      const row = cats.cats[index];
 
-                      if (index === cats.length - 1) {
+                      if (index === cats.cats.length - 1) {
                         return (
                           <CellMeasurer
                             key={key}
@@ -244,7 +319,7 @@ export default function Cat() {
         </WindowScroller>
         {singleCat && (
           <SingleCat
-            breeds={breeds}
+            breedInfo={breedInfo}
             singleCat={singleCat}
             handleClose={handleClose}
             closeNextImg={closeNextImg}
@@ -253,8 +328,8 @@ export default function Cat() {
             handlePrevimg={() => handlePrevimg()}
           />
         )}
-        {loading && <Loading>Loading...</Loading>}
-        {error && <Error>some thing went wrong</Error>}
+        {cats.loading && <Loading>Loading...</Loading>}
+        {cats.error && <Error>some thing went wrong</Error>}
       </ImgWrapper>
     </Wrapper>
   );

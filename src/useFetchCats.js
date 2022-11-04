@@ -1,58 +1,63 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { CatContext } from "./context";
 import axios from "axios";
+import { PORT, BASE_URL, divideCats } from "./constant/WEB_API";
 
-export default function useFetchCats(pageNumber) {
-  const [cats, setCats] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+export default function useFetchCats() {
+  const { cats, setCats } = useContext(CatContext);
 
-  const divideCats = (arr, num) => {
-    const res = [];
-    for (let i = 0; i < arr.length; i += num) {
-      const parts = arr.slice(i, i + num);
-      res.push(parts);
-    }
-    return res;
-  };
-
+  //get more random cats
   useEffect(() => {
-    // why setLoading here wrong ?
-    if (pageNumber === 0) {
-      const getCats = () => {
-        axios(`https://cat-node-api.onrender.com/api/cats?`)
-          .then((res) => {
-            const divide = divideCats(res.data, 3);
-            setCats(divide);
-            setHasMore(res.data.length > 0);
-            setLoading(false);
-          })
-          .catch(() => {
-            setError(true);
-            setLoading(false);
-          });
-      };
-      getCats();
-    } else {
-      setLoading(true);
+    if (cats.pageNumber > 0) {
+      console.log("load more");
+      setCats({ ...cats, loading: true });
       const loadMoreCats = () => {
-        axios(
-          `https://cat-node-api.onrender.com/api/moreCats?pageNumber=${pageNumber}`
-        )
+        axios(`${PORT}/api/moreCats?pageNumber=${cats.pageNumber}`)
           .then((res) => {
             const divide = divideCats([...res.data], 3);
-            setCats([...cats, ...divide]);
-            setHasMore(res.data.length > 0);
-            setLoading(false);
+            setCats({
+              ...cats,
+              cats: [...cats.cats, ...divide],
+              hasMore: res.data.length > 0,
+              loading: false,
+            });
           })
           .catch(() => {
-            setError(true);
-            setLoading(false);
+            setCats({
+              ...cats,
+              error: true,
+              loading: false,
+            });
           });
       };
       loadMoreCats();
     }
-  }, [pageNumber]);
+  }, [cats.pageNumber]);
 
-  return { cats, hasMore, loading, error };
+  // *why setLoading here wrong ?
+  // get random cats
+  useEffect(() => {
+    console.log("get");
+    const getCats = () => {
+      axios(`${PORT}/api/cats?`)
+        .then((res) => {
+          const divide = divideCats(res.data, 3);
+          console.log(divide);
+          setCats({
+            ...cats,
+            cats: divide,
+            hasMore: res.data.length > 0,
+            loading: false,
+          });
+        })
+        .catch(() => {
+          setCats({
+            ...cats,
+            error: true,
+            loading: false,
+          });
+        });
+    };
+    getCats();
+  }, []);
 }
