@@ -14,11 +14,11 @@ import {
 } from "react-virtualized";
 import { CatContext } from "./context";
 
-// *Pointer update
-// *useCallback update when dependency change?
-// *useCallback dependency meaning?
+// *reducer
 
-// placeholder & favorite
+// *Pointer update
+
+// favorite
 
 // Login & favorite
 // {
@@ -119,7 +119,6 @@ export default function Cat() {
     }
   }, [cats.pageNumber]);
 
-  // *why setLoading here wrong ?
   // get random cats
   useEffect(() => {
     if (!cats.isbreed) {

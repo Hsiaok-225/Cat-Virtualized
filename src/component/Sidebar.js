@@ -52,10 +52,10 @@ export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(null);
 
-  // get breed cats, but not load random cats -> set pageNumber=0
+  // get breed cats
   useEffect(() => {
     if (searchQuery) {
-      setCats({ ...cats, loading: true });
+      setCats({ ...cats, cats: [], loading: true });
       console.log(`get ${searchQuery}`);
       axios(`${BASE_URL}/api/breeds/ids?breeds_ids=${searchQuery}`)
         .then((res) => {
@@ -89,7 +89,6 @@ export default function Sidebar() {
   const handleRandom = () => {
     setSearchQuery(null);
     setCats({ ...cats, loading: true });
-    // get random & setLoading, hasMore -> so,we need to use store
     const getCats = () => {
       axios(`${BASE_URL}/api/cats?`)
         .then((res) => {
@@ -115,7 +114,6 @@ export default function Sidebar() {
       </SidebarWithIcon>
       {/* click -> favorite page */}
       <SidebarOption>Favorite</SidebarOption>
-      {/* click -> setCats(fetch random) */}
       <SidebarOption onClick={handleRandom}>Random</SidebarOption>
       <SidebarWithIcon onClick={handleClick}>
         Breeds
