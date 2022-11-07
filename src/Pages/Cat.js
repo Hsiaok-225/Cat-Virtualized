@@ -1,10 +1,13 @@
-import React, { useContext } from "react";
-import { useCallback, useEffect, useState, useRef } from "react";
+import React, {
+  useContext,
+  useCallback,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import axios from "axios";
-import { PORT, BASE_URL, divideCats } from "./constant/WEB_API";
 import styled from "styled-components";
-import SingleCat from "./component/SingleCat";
-import CatCard from "./component/CatCard";
+
 import {
   AutoSizer,
   List,
@@ -12,7 +15,11 @@ import {
   CellMeasurerCache,
   WindowScroller,
 } from "react-virtualized";
-import { CatContext } from "./context";
+import { CatContext } from "../context";
+
+import { PORT, BASE_URL, divideCats } from "../constant/WEB_API";
+import SingleCat from "../component/SingleCat";
+import CatCard from "../component/CatCard";
 
 // *reducer
 
@@ -26,19 +33,11 @@ import { CatContext } from "./context";
 //   "sub_id":"optional unique id of your user"
 // }
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto 30px;
-  width: 100%;
-  max-width: 956px;
-`;
-
 const ImgWrapper = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  margin-top: 28px;
+  width: 100%;
 `;
 
 const RowCatWrapper = styled.div`
@@ -80,16 +79,6 @@ export default function Cat() {
     })
   );
 
-  // useEffect(() => {
-  //   console.log(cats.cats);
-  // }, [cats.cats]);
-  // useEffect(() => {
-  //   console.log("isbreed", cats.isbreed);
-  // }, [cats.isbreed]);
-  // useEffect(() => {
-  //   console.log("row", rowIndex, "cat", catIndex);
-  // }, [rowIndex, catIndex]);
-
   //get more random cats
   useEffect(() => {
     if (cats.pageNumber > 0 && !cats.isbreed) {
@@ -99,7 +88,6 @@ export default function Cat() {
         axios(`${BASE_URL}/api/moreCats?pageNumber=${cats.pageNumber}`)
           .then((res) => {
             const divide = divideCats([...res.data], 3);
-            console.log(divide);
             setCats({
               ...cats,
               cats: [...cats.cats, ...divide],
@@ -121,7 +109,7 @@ export default function Cat() {
 
   // get random cats
   useEffect(() => {
-    if (!cats.isbreed) {
+    if (cats.cats.length === 0) {
       console.log("get init");
       setCats({ ...cats, loading: true });
       const getCats = () => {
@@ -173,6 +161,7 @@ export default function Cat() {
   }, [isScrollbar]);
 
   const observer = useRef();
+  // function 被當作 prop 傳入子元件時，避免耗時的重新渲染
   const lastCatElementRef = useCallback(
     (node) => {
       if (cats.isbreed) return;
@@ -234,102 +223,100 @@ export default function Cat() {
     setSingleCat(newSingleCat);
   };
   return (
-    <Wrapper>
-      <ImgWrapper>
-        <WindowScroller>
-          {({ height, isScrolling, scrollTop, registerChild }) => (
-            <AutoSizer disableHeight>
-              {({ width }) => (
-                <div ref={registerChild}>
-                  <List
-                    autoHeight
-                    isScrolling={isScrolling}
-                    scrollTop={scrollTop}
-                    width={width}
-                    height={height}
-                    rowCount={cats.cats.length}
-                    rowHeight={cache.current.rowHeight}
-                    deferredMeasurementCache={cache.current}
-                    rowRenderer={({ key, index, style, parent }) => {
-                      const row = cats.cats[index];
+    <ImgWrapper>
+      <WindowScroller>
+        {({ height, isScrolling, scrollTop, registerChild }) => (
+          <AutoSizer disableHeight>
+            {({ width }) => (
+              <div ref={registerChild}>
+                <List
+                  autoHeight
+                  isScrolling={isScrolling}
+                  scrollTop={scrollTop}
+                  width={width}
+                  height={height}
+                  rowCount={cats.cats.length}
+                  rowHeight={cache.current.rowHeight}
+                  deferredMeasurementCache={cache.current}
+                  rowRenderer={({ key, index, style, parent }) => {
+                    const row = cats.cats[index];
 
-                      if (index === cats.cats.length - 1) {
-                        return (
-                          <CellMeasurer
-                            key={key}
-                            cache={cache.current}
-                            parent={parent}
-                            columnIndex={0}
-                            rowIndex={index}
-                          >
-                            {({ measure, registerChild }) => (
-                              <div ref={registerChild} style={style}>
-                                <RowCatWrapper ref={lastCatElementRef}>
-                                  {row.map((cat, index) => (
-                                    <CatCard
-                                      handleSingleCat={() =>
-                                        // catIndex
-                                        handleSingleCat(cat, index)
-                                      }
-                                      key={index}
-                                      {...cat}
-                                      measure={measure}
-                                    />
-                                  ))}
-                                </RowCatWrapper>
-                              </div>
-                            )}
-                          </CellMeasurer>
-                        );
-                      } else {
-                        return (
-                          <CellMeasurer
-                            key={key}
-                            cache={cache.current}
-                            parent={parent}
-                            columnIndex={0}
-                            rowIndex={index}
-                          >
-                            {({ measure, registerChild }) => (
-                              <div ref={registerChild} style={style}>
-                                <RowCatWrapper row={row}>
-                                  {row.map((cat, index) => (
-                                    <CatCard
-                                      handleSingleCat={() =>
-                                        handleSingleCat(cat, index)
-                                      }
-                                      key={index}
-                                      {...cat}
-                                      measure={measure}
-                                    />
-                                  ))}
-                                </RowCatWrapper>
-                              </div>
-                            )}
-                          </CellMeasurer>
-                        );
-                      }
-                    }}
-                  ></List>
-                </div>
-              )}
-            </AutoSizer>
-          )}
-        </WindowScroller>
-        {singleCat && (
-          <SingleCat
-            breedInfo={breedInfo}
-            singleCat={singleCat}
-            handleClose={handleClose}
-            closeNextImg={closeNextImg}
-            closePrevImg={closePrevImg}
-            handleNextimg={() => handleNextimg()}
-            handlePrevimg={() => handlePrevimg()}
-          />
+                    if (index === cats.cats.length - 1) {
+                      return (
+                        <CellMeasurer
+                          key={key}
+                          cache={cache.current}
+                          parent={parent}
+                          columnIndex={0}
+                          rowIndex={index}
+                        >
+                          {({ measure, registerChild }) => (
+                            <div ref={registerChild} style={style}>
+                              <RowCatWrapper ref={lastCatElementRef}>
+                                {row.map((cat, index) => (
+                                  <CatCard
+                                    handleSingleCat={() =>
+                                      // catIndex
+                                      handleSingleCat(cat, index)
+                                    }
+                                    key={index}
+                                    {...cat}
+                                    measure={measure}
+                                  />
+                                ))}
+                              </RowCatWrapper>
+                            </div>
+                          )}
+                        </CellMeasurer>
+                      );
+                    } else {
+                      return (
+                        <CellMeasurer
+                          key={key}
+                          cache={cache.current}
+                          parent={parent}
+                          columnIndex={0}
+                          rowIndex={index}
+                        >
+                          {({ measure, registerChild }) => (
+                            <div ref={registerChild} style={style}>
+                              <RowCatWrapper>
+                                {row.map((cat, index) => (
+                                  <CatCard
+                                    handleSingleCat={() =>
+                                      handleSingleCat(cat, index)
+                                    }
+                                    key={index}
+                                    {...cat}
+                                    measure={measure}
+                                  />
+                                ))}
+                              </RowCatWrapper>
+                            </div>
+                          )}
+                        </CellMeasurer>
+                      );
+                    }
+                  }}
+                />
+              </div>
+            )}
+          </AutoSizer>
         )}
-        {cats.loading && <Loading>Loading...</Loading>}
-        {cats.error && <Error>some thing went wrong</Error>}
-      </ImgWrapper>
-    </Wrapper>
+      </WindowScroller>
+      {singleCat && (
+        <SingleCat
+          breedInfo={breedInfo}
+          singleCat={singleCat}
+          handleClose={handleClose}
+          closeNextImg={closeNextImg}
+          closePrevImg={closePrevImg}
+          handleNextimg={() => handleNextimg()}
+          handlePrevimg={() => handlePrevimg()}
+        />
+      )}
+      {cats.loading && <Loading>Loading...</Loading>}
+      {cats.error && <Error>some thing went wrong</Error>}
+    </ImgWrapper>
   );
 }

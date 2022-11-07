@@ -1,18 +1,21 @@
 import React from "react";
-import Cat from "../Cat";
-import Sidebar from "../component/Sidebar";
 import styled from "styled-components";
 
-const HomePage = styled.div`
+import Topbar from "../component/Topbar";
+import Cat from "./Cat";
+
+const HomeWrapper = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  margin: 0 auto 30px;
+  width: 956px;
 `;
 
 export default function Home() {
   return (
-    <HomePage>
-      <Sidebar />
+    <HomeWrapper>
+      <Topbar />
       <Cat />
-    </HomePage>
+    </HomeWrapper>
   );
 }

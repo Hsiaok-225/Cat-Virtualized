@@ -4,6 +4,11 @@ const Globalstyle = createGlobalStyle`
  * {
     margin: 0;
     padding: 0;
+
+    a {
+      text-decoration: none;
+      color: black;
+    }
  }  
  
   ::-webkit-scrollbar {

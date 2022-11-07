@@ -101,6 +101,8 @@ export default function SingleCat({
   closeNextImg,
   closePrevImg,
 }) {
+  // *set favorite
+
   return (
     <Modal>
       <CardWrapper>

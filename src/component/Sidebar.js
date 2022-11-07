@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 
 import styled from "styled-components";
-import axios from "axios";
 import Icons from "../icons";
 
-import { PORT, BASE_URL, divideCats } from "../constant/WEB_API";
-import breeds from "../constant/breeds";
-import { CatContext } from "../context";
+import { AuthContext } from "../context";
+
+// random & breeds 移到 Home Topbar
 
 const Container = styled.div`
   display: flex;
@@ -15,7 +15,7 @@ const Container = styled.div`
   position: sticky;
   top: 0;
 
-  width: 200px;
+  min-width: 200px;
   padding: 24px;
   height: 100vh;
   border-right: 1px solid rgba(0, 0, 0, 0.2);
@@ -42,89 +42,26 @@ const SidebarWithIcon = styled(SidebarOption)`
   align-items: center;
 `;
 
-const AllBreeds = styled(SidebarOption)`
-  margin-left: 16px;
-`;
-
 export default function Sidebar() {
-  const { cats, setCats } = useContext(CatContext);
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(null);
-
-  // get breed cats
-  useEffect(() => {
-    if (searchQuery) {
-      setCats({ ...cats, cats: [], loading: true });
-      console.log(`get ${searchQuery}`);
-      axios(`${BASE_URL}/api/breeds/ids?breeds_ids=${searchQuery}`)
-        .then((res) => {
-          const divide = divideCats(res.data, 3);
-          console.log(divide);
-          setCats({
-            ...cats,
-            cats: divide,
-            isbreed: true,
-            hasMore: res.data.length > 0,
-            loading: false,
-            pageNumber: 0,
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-  }, [searchQuery]);
-
-  // get Allbreeds
-  const handleClick = () => {
-    setIsOpen(!isOpen);
-  };
-
-  // setBreedsCats here
-  const handleSearch = (e) => {
-    setSearchQuery(e.target.innerText);
-  };
-
-  const handleRandom = () => {
-    setSearchQuery(null);
-    setCats({ ...cats, loading: true });
-    const getCats = () => {
-      axios(`${BASE_URL}/api/cats?`)
-        .then((res) => {
-          const divide = divideCats(res.data, 3);
-          setCats({
-            ...cats,
-            cats: divide,
-            isbreed: false,
-            hasMore: res.data.length > 0,
-            loading: false,
-          });
-        })
-        .catch(() => {});
-    };
-    getCats();
-  };
+  const { user } = useContext(AuthContext);
 
   return (
     <Container>
-      <SidebarWithIcon>
-        Login
-        <Icons.OctCat />
-      </SidebarWithIcon>
-      {/* click -> favorite page */}
-      <SidebarOption>Favorite</SidebarOption>
-      <SidebarOption onClick={handleRandom}>Random</SidebarOption>
-      <SidebarWithIcon onClick={handleClick}>
-        Breeds
-        <Icons.ArrowDropdown />
-      </SidebarWithIcon>
-      {isOpen &&
-        breeds.map((option, index) => (
-          <AllBreeds key={index} onClick={handleSearch}>
-            {option}
-          </AllBreeds>
-        ))}
+      {user && <SidebarOption>Hi! {user}</SidebarOption>}
+      {!user && (
+        <Link to="/login">
+          <SidebarWithIcon>
+            Login
+            <Icons.OctCat />
+          </SidebarWithIcon>
+        </Link>
+      )}
+      <Link to="/">
+        <SidebarOption>Home</SidebarOption>
+      </Link>
+      <Link to="/favorite">
+        <SidebarOption>Favorite</SidebarOption>
+      </Link>
     </Container>
   );
 }

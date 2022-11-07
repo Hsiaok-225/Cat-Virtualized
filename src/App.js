@@ -1,8 +1,21 @@
-import { useState, useEffect } from "react";
-import Globalstyle from "./Globalstyle";
-import { CatContext } from "./context";
+import { useEffect, useState } from "react";
 
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import styled from "styled-components";
+
+import Globalstyle from "./Globalstyle";
+import { CatContext, AuthContext } from "./context";
+import Sidebar from "./component/Sidebar";
+import Cat from "./Pages/Cat";
+import Register from "./Pages/Register";
+import Login from "./Pages/Login";
+import Favorite from "./Pages/Favorite";
 import Home from "./Pages/Home";
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
 
 const initialState = {
   cats: [],
@@ -15,14 +28,31 @@ const initialState = {
 
 function App() {
   const [cats, setCats] = useState(initialState);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user") || null;
+    if (user) {
+      setUser(user);
+    }
+  }, []);
 
   return (
-    <>
-      <Globalstyle />
+    <AuthContext.Provider value={{ user, setUser }}>
       <CatContext.Provider value={{ cats, setCats }}>
-        <Home />
+        <Globalstyle />
+        <Router>
+          <Wrapper>
+            <Sidebar />
+            <Routes>
+              <Route index element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/favorite" element={<Favorite />} />
+            </Routes>
+          </Wrapper>
+        </Router>
       </CatContext.Provider>
-    </>
+    </AuthContext.Provider>
   );
 }
 
