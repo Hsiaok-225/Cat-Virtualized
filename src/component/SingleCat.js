@@ -1,4 +1,8 @@
+import axios from "axios";
+import { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
+import { PORT } from "../constant/WEB_API";
+import { AuthContext } from "../context";
 import Icons from "../icons";
 
 const Modal = styled.div`
@@ -51,16 +55,56 @@ const CardInfo = styled.div`
   box-sizing: border-box;
 `;
 
+const CardTitle = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  position: relative;
+
+  a:hover {
+    color: palevioletred;
+  }
+`;
+
+const FavoriteButton = styled.div`
+  align-items: center;
+  border: 1px solid lightgrey;
+  border-radius: 8px;
+  padding: 6px 12px;
+  width: auto;
+
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+`;
+
+const FavoriteSuccess = styled.div`
+  align-items: center;
+  background-color: palevioletred;
+  color: white;
+  border-radius: 8px;
+  padding: 6px 12px;
+  width: auto;
+
+  position: absolute;
+  right: 0;
+  top: -40px;
+`;
+
 const InfoTitle = styled.div`
   font-weight: bold;
 
   a {
-    text-decoration: none;
+    font-size: 20px;
+    color: blue;
   }
 `;
 
 const InfoDesc = styled.div`
-  margin-top: 12px;
+  margin-top: 20px;
 `;
 
 const CloseButton = styled.div`
@@ -100,21 +144,51 @@ export default function SingleCat({
   handlePrevimg,
   closeNextImg,
   closePrevImg,
+  imageId,
 }) {
-  // *set favorite
+  const [isSuccess, setIsSuccess] = useState(false);
+  const { user } = useContext(AuthContext);
+
+  // useEffect(() => {
+  //   console.log(like);
+  // }, []);
+
+  // Create Favorites
+  const handleLike = async () => {
+    try {
+      const res = await axios.post(`${PORT}/api/createFavorite`, {
+        image_id: imageId,
+        sub_id: user,
+      });
+      console.log(res.data);
+      setIsSuccess(true);
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 1000);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <Modal>
+      {/* {cat.map} */}
       <CardWrapper>
         <ImageBox>
           <img src={singleCat} alt="img" />
         </ImageBox>
         <CardInfo>
-          <InfoTitle>
-            <a href={breedInfo.wikipedia_url} target="blank" alt="#">
-              {breedInfo.name}_WIKI
-            </a>
-          </InfoTitle>
+          <CardTitle>
+            <InfoTitle>
+              <a href={breedInfo.wikipedia_url} target="blank" alt="#">
+                {breedInfo.name}_WIKI
+              </a>
+            </InfoTitle>
+            {isSuccess && <FavoriteSuccess>Success!</FavoriteSuccess>}
+            <FavoriteButton onClick={handleLike}>
+              Add to Favorite
+            </FavoriteButton>
+          </CardTitle>
           <InfoDesc>{breedInfo.description}</InfoDesc>
         </CardInfo>
       </CardWrapper>

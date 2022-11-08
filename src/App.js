@@ -28,7 +28,7 @@ const initialState = {
 
 function App() {
   const [cats, setCats] = useState(initialState);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState("test01");
 
   useEffect(() => {
     const user = localStorage.getItem("user") || null;
@@ -47,6 +47,7 @@ function App() {
             <Routes>
               <Route index element={<Home />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/favorite" element={<Favorite />} />
             </Routes>
           </Wrapper>

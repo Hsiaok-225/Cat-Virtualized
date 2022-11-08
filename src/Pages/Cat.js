@@ -66,6 +66,8 @@ export default function Cat() {
   const { cats, setCats } = useContext(CatContext);
 
   const [singleCat, setSingleCat] = useState(null);
+  const [imageId, setImageId] = useState(null);
+
   const [breedInfo, setBreedInfo] = useState([]);
   const [catIndex, setCatIndex] = useState(null);
   const [rowIndex, setRowIndex] = useState(null);
@@ -78,6 +80,10 @@ export default function Cat() {
       fixedWidth: true,
     })
   );
+
+  useEffect(() => {
+    console.log(imageId);
+  }, [imageId]);
 
   //get more random cats
   useEffect(() => {
@@ -182,6 +188,9 @@ export default function Cat() {
   const handleSingleCat = (cat, index) => {
     setIsScrollbar(false);
 
+    // image_id
+    setImageId(cat.id);
+
     setSingleCat(cat.url);
     setCatIndex(index);
     const findRowIndex = cats.cats.findIndex(
@@ -197,6 +206,7 @@ export default function Cat() {
     setRowIndex(null);
   };
 
+  //*setImageId
   // [0-n][0-2] first & last Image
   const handleNextimg = () => {
     setClosePrevImg(false);
@@ -210,7 +220,10 @@ export default function Cat() {
     setCatIndex(nextCatIndex);
     setRowIndex(nextRowIndex);
     setSingleCat(newSingleCat);
+    setImageId(cats.cats[nextRowIndex][nextCatIndex].id);
   };
+
+  //*setImageId
   const handlePrevimg = () => {
     setCloseNextImg(false);
     const prevCatIndex = catIndex > 0 ? catIndex - 1 : 2;
@@ -221,6 +234,7 @@ export default function Cat() {
     setCatIndex(prevCatIndex);
     setRowIndex(prevRowIndex);
     setSingleCat(newSingleCat);
+    setImageId(cats.cats[prevRowIndex][prevCatIndex].id);
   };
   return (
     <ImgWrapper>
@@ -308,6 +322,7 @@ export default function Cat() {
         <SingleCat
           breedInfo={breedInfo}
           singleCat={singleCat}
+          imageId={imageId}
           handleClose={handleClose}
           closeNextImg={closeNextImg}
           closePrevImg={closePrevImg}

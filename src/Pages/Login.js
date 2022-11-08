@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import FormInput from "../component/FormInput";
@@ -110,7 +110,7 @@ export default function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
     axios
-      .post(`${PORT}/login`, {
+      .post(`${PORT}/auth/login`, {
         username: values.username,
         password: values.password,
       })
@@ -140,7 +140,9 @@ export default function Login() {
             />
           ))}
           <SubmitButton>sign up</SubmitButton>
-          <SubmitButton>Register</SubmitButton>
+          <Link to="/register">
+            <SubmitButton>Register</SubmitButton>
+          </Link>
         </LoginForm>
       </LoginFormContainer>
     </Wrapper>

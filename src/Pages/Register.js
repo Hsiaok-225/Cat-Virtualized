@@ -126,7 +126,7 @@ export default function Register() {
     e.preventDefault();
     console.log(values);
     axios
-      .post(`${PORT}/register`, values)
+      .post(`${PORT}/auth/register`, values)
       .then((res) => console.log(res.data))
       .catch((err) => console.log(err));
   };
