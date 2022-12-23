@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 import FormInput from "../component/FormInput";
-import { PORT } from "../constant/WEB_API";
+import { PORT, BASE_URL } from "../constant/WEB_API";
 
 const Wrapper = styled.div`
   display: flex;
@@ -126,7 +126,7 @@ export default function Register() {
     e.preventDefault();
     console.log(values);
     axios
-      .post(`${PORT}/auth/register`, values)
+      .post(`${BASE_URL}/auth/register`, values)
       .then((res) => console.log(res.data))
       .catch((err) => console.log(err));
   };

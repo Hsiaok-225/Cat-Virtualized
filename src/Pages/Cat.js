@@ -21,23 +21,10 @@ import { PORT, BASE_URL, divideCats } from "../constant/WEB_API";
 import SingleCat from "../component/SingleCat";
 import CatCard from "../component/CatCard";
 
-// *reducer
-
-// *Pointer update
-
-// favorite
-
-// Login & favorite
-// {
-//   "image_id":"id of the image",
-//   "sub_id":"optional unique id of your user"
-// }
-
 const ImgWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  position: relative;
-  width: 100%;
+  width: 956px;
 `;
 
 const RowCatWrapper = styled.div`
@@ -53,7 +40,7 @@ const RowCatWrapper = styled.div`
 const Loading = styled.div`
   font-size: 32px;
   text-align: center;
-  margin-top: 20px;
+  margin: 30px 0;
 `;
 
 const Error = styled.div`

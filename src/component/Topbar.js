@@ -10,16 +10,11 @@ import Icons from "../icons";
 const TopbarContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-
-  width: 100%;
-
   margin: 20px 0px;
 `;
 
 const SearchItem = styled.div`
   font-size: 24px;
-  text-align: center;
   width: 60px;
 
   padding: 4px 12px;
@@ -38,17 +33,15 @@ const SearchItem = styled.div`
 
 const SearchTitle = styled(SearchItem)`
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  justify-content: center;
   width: 80px;
 `;
 
 const SearchBox = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
 `;
 
 const SearchBreeds = styled.div`

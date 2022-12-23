@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
 
-import { PORT } from "../constant/WEB_API";
+import { PORT, BASE_URL } from "../constant/WEB_API";
 import { AuthContext } from "../context";
 
 import FavoriteCard from "../component/FavoriteCard";
@@ -11,12 +11,15 @@ import FavoriteCard from "../component/FavoriteCard";
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  width: 980px;
+  margin: 0 auto;
 `;
 
 const FavoriteBox = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  margin-top: 20px;
 `;
 
 const Loading = styled.div`
@@ -36,10 +39,6 @@ export default function Favorite() {
       navigator("/login");
     }
   }, []);
-
-  useEffect(() => {
-    console.log(favorite);
-  }, [favorite]);
 
   //Getting favorite cats
   useEffect(() => {

@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 import FormInput from "../component/FormInput";
-import { PORT } from "../constant/WEB_API";
+import { PORT, BASE_URL } from "../constant/WEB_API";
 import { AuthContext } from "../context";
 
 const Wrapper = styled.div`
@@ -69,13 +69,36 @@ const SubmitButton = styled.button`
   cursor: ${(props) => (props.active ? "not-allowed" : "pointer")};
 `;
 
+const inputs = [
+  {
+    name: "username",
+    type: "text",
+    placeholder: "Username",
+    errorMessage:
+      "Username should be 3-16 characters and shouldn't include any special character!",
+    label: "Username",
+    pattern: "^[A-Za-z0-9]{3,16}$",
+    required: true,
+  },
+  {
+    name: "password",
+    type: "password",
+    placeholder: "Password",
+    errorMessage:
+      "Password should be 6-20 characters and include at least 1 letter, 1 number ",
+    label: "Password",
+    pattern: `^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{6,20}$`,
+    required: true,
+  },
+];
+
 export default function Login() {
   const { user, setUser } = useContext(AuthContext);
   const [values, setValues] = useState({
     username: "",
     password: "",
   });
-
+  console.log(user);
   const navigator = useNavigate();
 
   useEffect(() => {
@@ -84,33 +107,10 @@ export default function Login() {
     }
   }, [user]);
 
-  const inputs = [
-    {
-      name: "username",
-      type: "text",
-      placeholder: "Username",
-      errorMessage:
-        "Username should be 3-16 characters and shouldn't include any special character!",
-      label: "Username",
-      pattern: "^[A-Za-z0-9]{3,16}$",
-      required: true,
-    },
-    {
-      name: "password",
-      type: "password",
-      placeholder: "Password",
-      errorMessage:
-        "Password should be 6-20 characters and include at least 1 letter, 1 number ",
-      label: "Password",
-      pattern: `^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{6,20}$`,
-      required: true,
-    },
-  ];
-
   const handleLogin = (e) => {
     e.preventDefault();
     axios
-      .post(`${PORT}/auth/login`, {
+      .post(`${BASE_URL}/auth/login`, {
         username: values.username,
         password: values.password,
       })

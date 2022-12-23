@@ -6,20 +6,15 @@ import Icons from "../icons";
 
 import { AuthContext } from "../context";
 
-// random & breeds 移到 Home Topbar
-
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  position: sticky;
+  position: fixed;
   top: 0;
-
-  min-width: 200px;
+  left: 0;
+  width: 200px;
   padding: 24px;
-  height: 100vh;
+  height: 100%;
   border-right: 1px solid rgba(0, 0, 0, 0.2);
-  overflow-y: scroll;
+  overflow-y: none;
 `;
 
 const SidebarOption = styled.div`
@@ -43,7 +38,11 @@ const SidebarWithIcon = styled(SidebarOption)`
 `;
 
 export default function Sidebar() {
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    setUser(null);
+  };
 
   return (
     <Container>
@@ -62,6 +61,7 @@ export default function Sidebar() {
       <Link to="/favorite">
         <SidebarOption>Favorite</SidebarOption>
       </Link>
+      {user && <SidebarOption onClick={handleLogout}>Log out</SidebarOption>}
     </Container>
   );
 }

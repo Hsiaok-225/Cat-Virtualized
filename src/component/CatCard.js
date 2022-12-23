@@ -55,9 +55,9 @@ export default function CatCard({ url, breeds, handleSingleCat, measure }) {
     <Wrapper onClick={handleSingleCat}>
       <img src={url} alt="img" onLoad={measure} />
       <CatInfo>
-        <InfoName>{breeds[0].name}</InfoName>
-        <InfoContentText>{breeds[0].origin}</InfoContentText>
-        <InfoContentText>{breeds[0].life_span}</InfoContentText>
+        <InfoName>{breeds[0]?.name}</InfoName>
+        <InfoContentText>{breeds[0]?.origin}</InfoContentText>
+        <InfoContentText>{breeds[0]?.life_span}</InfoContentText>
       </CatInfo>
     </Wrapper>
   );

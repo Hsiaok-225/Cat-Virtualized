@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import styled from "styled-components";
 
 import Globalstyle from "./Globalstyle";
 import { CatContext, AuthContext } from "./context";
 import Sidebar from "./component/Sidebar";
-import Cat from "./Pages/Cat";
 import Register from "./Pages/Register";
 import Login from "./Pages/Login";
 import Favorite from "./Pages/Favorite";
@@ -14,7 +13,6 @@ import Home from "./Pages/Home";
 
 const Wrapper = styled.div`
   display: flex;
-  flex-direction: row;
 `;
 
 const initialState = {

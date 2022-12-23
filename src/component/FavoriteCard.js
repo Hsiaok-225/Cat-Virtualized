@@ -7,15 +7,20 @@ import { PORT } from "../constant/WEB_API";
 import { AuthContext } from "../context";
 
 const FavoriteCardWrapper = styled.div`
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   width: 300px;
   height: 420px;
   border: 1px solid lightgrey;
-
-  margin: 40px;
+  margin-right: 40px;
+  margin-top: 20px;
 
   position: relative;
+
+  &:nth-child(3) {
+    margin-right: 0px;
+  }
 `;
 
 const FavoriteCatId = styled.div`

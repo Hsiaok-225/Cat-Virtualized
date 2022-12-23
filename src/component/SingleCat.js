@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { PORT } from "../constant/WEB_API";
 import { AuthContext } from "../context";
@@ -148,6 +149,7 @@ export default function SingleCat({
 }) {
   const [isSuccess, setIsSuccess] = useState(false);
   const { user } = useContext(AuthContext);
+  const navigator = useNavigate();
 
   // useEffect(() => {
   //   console.log(like);
@@ -155,18 +157,22 @@ export default function SingleCat({
 
   // Create Favorites
   const handleLike = async () => {
-    try {
-      const res = await axios.post(`${PORT}/api/createFavorite`, {
-        image_id: imageId,
-        sub_id: user,
-      });
-      console.log(res.data);
-      setIsSuccess(true);
-      setTimeout(() => {
-        setIsSuccess(false);
-      }, 1000);
-    } catch (err) {
-      console.log(err);
+    if (user) {
+      try {
+        const res = await axios.post(`${PORT}/api/createFavorite`, {
+          image_id: imageId,
+          sub_id: user,
+        });
+        console.log(res.data);
+        setIsSuccess(true);
+        setTimeout(() => {
+          setIsSuccess(false);
+        }, 1000);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      navigator("/login");
     }
   };
 
