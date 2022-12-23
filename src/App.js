@@ -41,7 +41,7 @@ function App() {
         <Globalstyle />
         <Router>
           <Wrapper>
-            <Sidebar />
+            {/* <Sidebar /> */}
             <Routes>
               <Route index element={<Home />} />
               <Route path="/login" element={<Login />} />

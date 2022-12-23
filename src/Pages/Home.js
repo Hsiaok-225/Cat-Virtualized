@@ -11,7 +11,7 @@ const HomeWrapper = styled.div`
   height: 100%;
   width: 100%;
   overflow-y: auto;
-  margin-left: 200px;
+  /* margin-left: 200px; */
 `;
 
 export default function Home() {
