@@ -7,11 +7,10 @@ import Cat from "./Cat";
 const HomeWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  max-width: 956px;
+  margin: auto;
   align-items: center;
-  height: 100%;
-  width: 100%;
   overflow-y: auto;
-  /* margin-left: 200px; */
 `;
 
 export default function Home() {

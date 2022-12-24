@@ -10,21 +10,20 @@ import Icons from "../icons";
 const TopbarContainer = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
   margin: 20px 0px;
 `;
 
 const SearchItem = styled.div`
   font-size: 24px;
   width: 60px;
-
+  text-align: center;
   padding: 4px 12px;
   margin-top: 12px;
-
   border: none;
   border-radius: 4px;
   color: black;
   cursor: pointer;
-
   :hover {
     background-color: rgba(0, 0, 0, 0.3);
     color: white;
@@ -42,6 +41,7 @@ const SearchTitle = styled(SearchItem)`
 const SearchBox = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
 `;
 
 const SearchBreeds = styled.div`
@@ -49,6 +49,9 @@ const SearchBreeds = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  border: 1px solid rgb(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 20px;
 `;
 
 export default function Topbar() {

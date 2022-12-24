@@ -11,9 +11,7 @@ import Login from "./Pages/Login";
 import Favorite from "./Pages/Favorite";
 import Home from "./Pages/Home";
 
-const Wrapper = styled.div`
-  display: flex;
-`;
+const Wrapper = styled.div``;
 
 const initialState = {
   cats: [],
